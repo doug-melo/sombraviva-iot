@@ -5,13 +5,22 @@ Projeto CitizenTech **SombraViva — Inteligência Climática Urbana** (estudo d
 
 > 🔗 **Link do projeto no Wokwi:** `COLE_AQUI_O_LINK_DO_WOKWI`
 > 🎬 **Vídeo (até 4 min):** `COLE_AQUI_O_LINK_DO_VIDEO`
-> 👥 **Integrantes:** veja [`integrantes.txt`](integrantes.txt)
 
 | Repositório da mesma CitizenTech | Papel |
 |---|---|
 | **sombraviva-iot** (este) | Circuito ESP32 no Wokwi (Physical Computing) |
 | [Global-Solution---2-semestre---Cyber-Soa](https://github.com/JoaoKraideM/Global-Solution---2-semestre---Cyber-Soa) | API REST que recebe as medições em `POST /api/v1/medicoes` |
 | [sombraviva-so](https://github.com/doug-melo/sombraviva-so) | VM Linux que hospeda a API e publica o túnel HTTPS usado pelo Wokwi |
+
+## Integrantes
+
+| Nome | RM |
+|---|---|
+| Douglas dos Santos Melo | RM556439 |
+| Henrique Sanches | RM557959 |
+| João Pedro Kraide Máximo | RM563166 |
+| Matheus Marcelino Dantas da Silva | RM556332 |
+| Nicolas Caciolato Reis | RM556506 |
 
 ---
 
@@ -53,9 +62,9 @@ A cada 30 segundos ele envia as medições (JSON) para a **API REST do SombraViv
 
 | Disciplina | Como o circuito participa |
 |---|---|
-| **SOA** | Envia as medições para `POST /api/v1/medicoes`, que grava no MySQL. Exemplo pronto em `api_medicoes_exemplo.py`. |
-| **Cybersecurity** | Dispositivo autenticado por **token Bearer** + `X-Device-Id`; tokens inválidos geram `401` e um registro `ACESSO_NEGADO` no log de auditoria; a API impede que um dispositivo publique em nome de outro (`403`). |
-| **Análise de dados / Frontend** | O dashboard consome `GET /api/v1/medicoes` para mostrar o gráfico Arborizada x Calçadão e compará-lo com a Open-Meteo. |
+| **SOA** | Envia as medições para `POST /api/v1/medicoes` da API da equipe, que grava no MySQL (tabela `readings`, migração Alembic 004) e devolve `201`. |
+| **Cybersecurity** | Dispositivo autenticado por **token Bearer** + `X-Device-Id`; tokens inválidos geram `401` e um evento `iot_auth` no painel `/admin` (sem gravar o token); a API impede que um dispositivo publique em nome de outro (`403`). |
+| **Frontend / Operating Systems** | Cada zona alimenta uma estação do portal (`arborizada` → `verde-demo`, `sem_vegetacao` → `centro-demo`); a API roda na VM Linux provisionada por Shell Script e é exposta ao Wokwi por um túnel HTTPS. |
 | **ODS 3, 11 e 13** | Alertas de calor protegem a saúde (ODS 3), os dados apoiam o planejamento urbano e a arborização (ODS 11) e evidenciam a adaptação climática (ODS 13). |
 
 ## 3. Componentes e pinagem
@@ -63,15 +72,27 @@ A cada 30 segundos ele envia as medições (JSON) para a **API REST do SombraViv
 | Componente (Wokwi) | ID no diagrama | Pino do componente | Pino do ESP32 | Observação |
 |---|---|---|---|---|
 | ESP32 DevKitC V4 (`board-esp32-devkit-c-v4`) | `esp` | — | — | Placa principal |
-| DHT22 — Zona Arborizada (`wokwi-dht22`) | `dht_arborizada` | SDA / VCC / GND | **GPIO 4** / 3V3 / GND | Temperatura e umidade |
+| DHT22 — Zona Arborizada (`wokwi-dht22`) | `dht_arborizada` | SDA / VCC / GND | **GPIO 17** / 3V3 / GND | Temperatura e umidade (no GPIO 4 o DHT22 dava TIMEOUT no simulador, por isso foi movido) |
 | DHT22 — Zona Sem Vegetação (`wokwi-dht22`) | `dht_calcadao` | SDA / VCC / GND | **GPIO 16** / 3V3 / GND | Temperatura e umidade |
 | Módulo LDR (`wokwi-photoresistor-sensor`) | `ldr` | AO / VCC / GND | **GPIO 34** / 3V3 / GND | ADC1 (funciona com Wi-Fi ligado) |
 | Display OLED 128x64 I2C (`board-ssd1306`) | `oled` | SDA / SCL / VCC / GND | **GPIO 21** / **GPIO 22** / 3V3 / GND | Endereço 0x3C |
-| LED verde + resistor 220 Ω | `led_verde`, `r_verde` | A (via resistor) / C | **GPIO 25** / GND | Risco NORMAL |
-| LED amarelo + resistor 220 Ω | `led_amarelo`, `r_amarelo` | A (via resistor) / C | **GPIO 26** / GND | Risco ATENÇÃO |
-| LED vermelho + resistor 220 Ω | `led_vermelho`, `r_vermelho` | A (via resistor) / C | **GPIO 27** / GND | ALERTA (fixo) / PERIGO (piscando) |
+| LED verde + resistor 220 Ω | `led_verde`, `r_verde` | A / C (C → resistor → GND) | **GPIO 25** / GND | Risco NORMAL |
+| LED amarelo + resistor 220 Ω | `led_amarelo`, `r_amarelo` | A / C (C → resistor → GND) | **GPIO 26** / GND | Risco ATENÇÃO |
+| LED vermelho + resistor 220 Ω | `led_vermelho`, `r_vermelho` | A / C (C → resistor → GND) | **GPIO 27** / GND | ALERTA (fixo) / PERIGO (piscando) |
 | Buzzer (`wokwi-buzzer`) | `buzzer` | 2 (+) / 1 (−) | **GPIO 13** / GND | Toca intermitente em PERIGO |
 | Botão (`wokwi-pushbutton`) | `botao` | 1.r / 2.r | **GPIO 33** / GND | `INPUT_PULLUP` |
+
+### Organização visual do diagrama
+
+Os fios usam só segmentos horizontais e verticais, cada um no seu corredor, com as cores padronizadas: **vermelho = 3V3**, **preto = GND**, cores próprias para cada sinal. Os componentes ficam agrupados por função ao redor do ESP32:
+
+| Região | Componentes | Pinos do ESP32 |
+|---|---|---|
+| Acima, à direita | Display OLED (I2C) | lado direito: 21, 22, GND |
+| À direita | DHT22 Arborizada e DHT22 Calçadão, lado a lado (alimentação encadeada de um para o outro) | lado direito: 16, 17, GND |
+| À esquerda | LDR e botão | lado esquerdo: 34, 33, 3V3 |
+| Abaixo, à esquerda | 3 LEDs com o resistor logo abaixo de cada um e um trilho único de GND | lado esquerdo: 25, 26, 27, GND |
+| Abaixo | Buzzer | lado esquerdo: 13 |
 
 **Por que esses pinos?** Evitamos os pinos de *strapping* (0, 2, 5, 12 e 15), que influenciam o boot. Os GPIOs 34–39 são só de entrada, por isso usamos o 34 apenas para o LDR. Ele pertence ao ADC1, porque o ADC2 não funciona com o Wi-Fi ligado. Todas as saídas (13, 25, 26, 27) são GPIOs com saída normal.
 
@@ -147,9 +168,28 @@ Durante a simulação, **clique no DHT22** e ajuste os controles de temperatura 
 - **clique curto** troca a tela do OLED: Arborizada → Calçadão → Ilha de calor → Osasco (Open-Meteo) x Sensor;
 - **segurar por mais de 1 s** força o envio imediato para a API (bom para o vídeo).
 
-**Teste de segurança:** troque o `DEVICE_TOKEN` por um valor errado. O Serial mostra `Token do dispositivo REJEITADO (HTTP 401)` e a API registra `ACESSO_NEGADO` no log de auditoria.
+**Teste de segurança:** troque o `DEVICE_TOKEN` por um valor errado. O Serial mostra `Token do dispositivo REJEITADO (HTTP 401)` e a API registra um evento `iot_auth` (bloqueado) no painel `/admin`.
 
-## 8. Arquivos
+## 8. Evidências
+
+| Evidência | Arquivo |
+|---|---|
+| Simulação rodando: Wi-Fi conectado, as duas zonas lidas (25 °C × 30 °C, Δ = +5 °C → ATENÇÃO), Open-Meteo e envio `HTTP 200` | [`evidencias/01_wokwi_simulacao_funcionando.jpg`](evidencias/01_wokwi_simulacao_funcionando.jpg) |
+
+Saída real do Serial Monitor (simulação de 18/11/2026):
+
+```text
+=== SombraViva — Estacao IoT de Ilha de Calor ===
+[WIFI] Conectado! IP: 10.10.0.2
+[LEITURA] Arborizada: 25.0C 60% IC=25.1C | Calcadao: 30.0C 50% IC=31.0C | Delta=5.0C | Luz=19918 lux | Risco=ATENCAO
+[OPEN-METEO] Osasco agora: 23.0C, 75% de umidade
+[API] arborizada enviado (HTTP 200): {"device_id":"esp32-osasco-calcadao-01","zona":"arborizada","temperatura":25,...}
+[API] sem_vegetacao enviado (HTTP 200): {"device_id":"esp32-osasco-calcadao-01","zona":"sem_vegetacao","temperatura":30,...}
+```
+
+**Problema encontrado e corrigido:** com o DHT22 da zona arborizada no GPIO 4, o simulador devolvia `TIMEOUT` em todas as leituras. Movemos o sensor para o **GPIO 17** (pino livre, sem função de boot) e as duas zonas passaram a ler normalmente.
+
+## 9. Arquivos
 
 | Arquivo | Conteúdo |
 |---|---|

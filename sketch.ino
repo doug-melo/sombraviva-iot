@@ -2,6 +2,13 @@
  * ============================================================================
  *  SombraViva — Estação IoT de Ilha de Calor (ESP32 + Wokwi)
  *  Global Solution FIAP 2026 — Physical Computing: IoT & IoB
+ *
+ *  Integrantes:
+ *    Douglas dos Santos Melo ............ RM556439
+ *    Henrique Sanches ................... RM557959
+ *    João Pedro Kraide Máximo ........... RM563166
+ *    Matheus Marcelino Dantas da Silva .. RM556332
+ *    Nicolas Caciolato Reis ............. RM556506
  * ============================================================================
  *  O que este firmware faz:
  *   1. Lê DOIS sensores DHT22: um na "Zona Arborizada" e outro na
@@ -72,7 +79,7 @@ const unsigned long INTERVALO_OPEN_METEO = 600000;  // Open-Meteo a cada 10 min
 //    junto com o Wi-Fi), por isso é ideal para o LDR.
 //  - Saídas (LEDs/buzzer) em GPIOs com capacidade de saída (13, 25, 26, 27).
 // ---------------------------------------------------------------------------
-const int PIN_DHT_ARBORIZADA = 4;   // DHT22 #1 — Zona Arborizada
+const int PIN_DHT_ARBORIZADA = 17;  // DHT22 #1 — Zona Arborizada
 const int PIN_DHT_CALCADAO   = 16;  // DHT22 #2 — Zona Sem Vegetação (Calçadão)
 const int PIN_LDR            = 34;  // AO do módulo LDR (entrada analógica)
 const int PIN_LED_VERDE      = 25;
