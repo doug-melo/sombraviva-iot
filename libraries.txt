@@ -1,0 +1,6 @@
+# Bibliotecas do Wokwi Library Manager usadas pelo sketch.ino
+# (WiFi, HTTPClient, WiFiClientSecure e Wire já vêm no core do ESP32)
+DHT sensor library for ESPx
+Adafruit SSD1306
+Adafruit GFX Library
+ArduinoJson

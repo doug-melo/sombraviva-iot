@@ -1,0 +1,304 @@
+{
+  "version": 1,
+  "author": "Equipe SombraViva - FIAP GS 2026",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht_arborizada",
+      "top": -210,
+      "left": -200,
+      "attrs": {
+        "temperature": "25",
+        "humidity": "60",
+        "label": "Zona Arborizada"
+      }
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht_calcadao",
+      "top": -210,
+      "left": -90,
+      "attrs": {
+        "temperature": "30",
+        "humidity": "50",
+        "label": "Zona Sem Vegetacao (Calcadao)"
+      }
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr",
+      "top": 250,
+      "left": -260,
+      "attrs": {
+        "lux": "20000"
+      }
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "oled",
+      "top": -120,
+      "left": 200,
+      "attrs": {
+        "i2cAddress": "0x3c"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_verde",
+      "top": 120,
+      "left": 300,
+      "attrs": {
+        "color": "green",
+        "label": "Normal"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_amarelo",
+      "top": 120,
+      "left": 350,
+      "attrs": {
+        "color": "yellow",
+        "label": "Atencao"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_vermelho",
+      "top": 120,
+      "left": 400,
+      "attrs": {
+        "color": "red",
+        "label": "Alerta/Perigo"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_verde",
+      "top": 220,
+      "left": 250,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_amarelo",
+      "top": 220,
+      "left": 300,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_vermelho",
+      "top": 220,
+      "left": 350,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer",
+      "top": 300,
+      "left": 180,
+      "attrs": {
+        "volume": "0.2"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "botao",
+      "top": 300,
+      "left": -120,
+      "attrs": {
+        "color": "blue",
+        "label": "Tela / Enviar"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "esp:TX",
+      "$serialMonitor:RX",
+      "",
+      []
+    ],
+    [
+      "esp:RX",
+      "$serialMonitor:TX",
+      "",
+      []
+    ],
+    [
+      "dht_arborizada:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "dht_arborizada:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "dht_arborizada:SDA",
+      "esp:4",
+      "green",
+      []
+    ],
+    [
+      "dht_calcadao:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "dht_calcadao:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "dht_calcadao:SDA",
+      "esp:16",
+      "orange",
+      []
+    ],
+    [
+      "ldr:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "ldr:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "ldr:AO",
+      "esp:34",
+      "purple",
+      []
+    ],
+    [
+      "oled:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "oled:GND",
+      "esp:GND.2",
+      "black",
+      []
+    ],
+    [
+      "oled:SDA",
+      "esp:21",
+      "blue",
+      []
+    ],
+    [
+      "oled:SCL",
+      "esp:22",
+      "yellow",
+      []
+    ],
+    [
+      "esp:25",
+      "r_verde:1",
+      "green",
+      []
+    ],
+    [
+      "r_verde:2",
+      "led_verde:A",
+      "green",
+      []
+    ],
+    [
+      "led_verde:C",
+      "esp:GND.3",
+      "black",
+      []
+    ],
+    [
+      "esp:26",
+      "r_amarelo:1",
+      "gold",
+      []
+    ],
+    [
+      "r_amarelo:2",
+      "led_amarelo:A",
+      "gold",
+      []
+    ],
+    [
+      "led_amarelo:C",
+      "esp:GND.3",
+      "black",
+      []
+    ],
+    [
+      "esp:27",
+      "r_vermelho:1",
+      "red",
+      []
+    ],
+    [
+      "r_vermelho:2",
+      "led_vermelho:A",
+      "red",
+      []
+    ],
+    [
+      "led_vermelho:C",
+      "esp:GND.3",
+      "black",
+      []
+    ],
+    [
+      "buzzer:2",
+      "esp:13",
+      "violet",
+      []
+    ],
+    [
+      "buzzer:1",
+      "esp:GND.2",
+      "black",
+      []
+    ],
+    [
+      "botao:1.r",
+      "esp:33",
+      "cyan",
+      []
+    ],
+    [
+      "botao:2.r",
+      "esp:GND.1",
+      "black",
+      []
+    ]
+  ],
+  "dependencies": {}
+}
