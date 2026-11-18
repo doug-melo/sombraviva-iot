@@ -3,7 +3,7 @@
 **Global Solution FIAP 2026 — Physical Computing: IoT & IoB**
 Projeto CitizenTech **SombraViva — Inteligência Climática Urbana** (estudo de caso: Osasco-SP).
 
-> 🔗 **Link do projeto no Wokwi:** `COLE_AQUI_O_LINK_DO_WOKWI`
+> 🔗 **Link do projeto no Wokwi:** <https://wokwi.com/projects/481031051848539137>
 > 🎬 **Vídeo (até 4 min):** `COLE_AQUI_O_LINK_DO_VIDEO`
 
 | Repositório da mesma CitizenTech | Papel |
