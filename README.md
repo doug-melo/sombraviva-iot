@@ -10,7 +10,7 @@ Projeto CitizenTech **SombraViva — Inteligência Climática Urbana** (estudo d
 | Repositório da mesma CitizenTech | Papel |
 |---|---|
 | **sombraviva-iot** (este) | Circuito ESP32 no Wokwi (Physical Computing) |
-| [sombraviva-soa](https://github.com/doug-melo/sombraviva-soa) | API REST que recebe as medições em `POST /api/v1/medicoes` |
+| [Global-Solution---2-semestre---Cyber-Soa](https://github.com/JoaoKraideM/Global-Solution---2-semestre---Cyber-Soa) | API REST que recebe as medições em `POST /api/v1/medicoes` |
 | [sombraviva-so](https://github.com/doug-melo/sombraviva-so) | VM Linux que hospeda a API e publica o túnel HTTPS usado pelo Wokwi |
 
 ---
@@ -105,7 +105,7 @@ O **risco geral**, usado pelos LEDs e pelo buzzer, é o **pior** entre as duas z
 O Wokwi conecta na rede `Wokwi-GUEST` e **acessa a internet**, mas **não enxerga o `localhost` do seu PC**. Por isso a `API_URL` precisa ser pública:
 
 - **Teste rápido (padrão):** `API_URL = "https://httpbin.org/post"`. O httpbin só devolve o JSON recebido, então o Serial mostra `HTTP 200` e prova que o envio funciona.
-- **Com a API do SombraViva (usado na entrega):** a API do repositório [sombraviva-soa](https://github.com/doug-melo/sombraviva-soa) roda na VM do repositório [sombraviva-so](https://github.com/doug-melo/sombraviva-so). Na VM:
+- **Com a API do SombraViva (usado na entrega):** a API do repositório [Global-Solution---2-semestre---Cyber-Soa](https://github.com/JoaoKraideM/Global-Solution---2-semestre---Cyber-Soa) roda na VM do repositório [sombraviva-so](https://github.com/doug-melo/sombraviva-so). Na VM:
   ```bash
   sudo ./scripts/06_tunnel.sh      # imprime https://XXXX.trycloudflare.com
   ```
