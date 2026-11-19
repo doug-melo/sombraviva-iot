@@ -345,7 +345,8 @@ void conectarWiFi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD, 6);  // canal 6 acelera a conexão no Wokwi
   unsigned long inicio = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - inicio < 15000) {
+  // 30 s: no Wokwi a conexão pode levar mais de 15 s quando o simulador está lento
+  while (WiFi.status() != WL_CONNECTED && millis() - inicio < 30000) {
     delay(250);
     Serial.print(".");
   }
