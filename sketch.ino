@@ -19,7 +19,9 @@
  *   4. Classifica o risco: NORMAL / ATENCAO / ALERTA / PERIGO.
  *   5. Sinaliza localmente: semáforo de LEDs, buzzer e display OLED.
  *   6. Envia as medições em JSON para a API REST do SombraViva (FastAPI),
- *      autenticando o dispositivo com token Bearer (integração com Cyber).
+ *      autenticando o dispositivo com token Bearer (integração com Cyber):
+ *      a cada 30 s E imediatamente quando o nível de risco muda
+ *      (ex.: ATENCAO -> PERIGO), sem esperar o próximo ciclo.
  *   7. Consulta a temperatura oficial de Osasco na API Open-Meteo para
  *      comparar sensor x dado meteorológico (integração com o website).
  *
@@ -68,7 +70,8 @@ const char* OPEN_METEO_URL =
 
 // Intervalos (ms)
 const unsigned long INTERVALO_LEITURA    = 5000;    // lê sensores a cada 5 s
-const unsigned long INTERVALO_ENVIO      = 30000;   // envia à API a cada 30 s
+const unsigned long INTERVALO_ENVIO      = 30000;   // envio periódico à API a cada 30 s
+// Além do periódico, uma mudança de nível de risco dispara envio imediato (ver loop()).
 const unsigned long INTERVALO_OPEN_METEO = 600000;  // Open-Meteo a cada 10 min
 
 // ---------------------------------------------------------------------------
@@ -147,6 +150,8 @@ LeituraZona calcadao   = { "sem_vegetacao",  "Calcadao",   NAN, NAN, NAN, NORMAL
 float luminosidadeLux = 0;
 float deltaIlhaCalor  = 0;      // °C (Calçadão - Arborizada)
 NivelRisco riscoGeral = NORMAL;
+NivelRisco riscoEnviado = NORMAL;   // último nível de risco enviado à API
+bool houveEnvio = false;            // só compara depois do 1º envio
 
 float tempOficial = NAN;        // Open-Meteo
 float umidOficial = NAN;
@@ -452,6 +457,8 @@ void enviarTudo() {
   }
   enviarMedicao(arborizada);
   enviarMedicao(calcadao);
+  riscoEnviado = riscoGeral;
+  houveEnvio = true;
 }
 
 // ---------------------------------------------------------------------------
@@ -530,6 +537,16 @@ void loop() {
     ultimaLeitura = agora;
     lerSensores();
     atualizarDisplay();
+
+    // Mudança de faixa (ex.: ATENCAO -> PERIGO ou PERIGO -> ALERTA):
+    // envia na hora, sem esperar o ciclo de 30 s, e reinicia a contagem.
+    if (houveEnvio && riscoGeral != riscoEnviado) {
+      Serial.printf("[API] Risco mudou: %s -> %s. Envio imediato.\n",
+                    TEXTO_RISCO[riscoEnviado], TEXTO_RISCO[riscoGeral]);
+      riscoEnviado = riscoGeral;   // evita reenvio a cada leitura se estiver offline
+      enviarTudo();
+      ultimoEnvio = millis();
+    }
   }
 
   if (openMeteoPendente || agora - ultimoOpenMeteo >= INTERVALO_OPEN_METEO) {
