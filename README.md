@@ -4,7 +4,7 @@
 Projeto CitizenTech **SombraViva — Inteligência Climática Urbana** (estudo de caso: Osasco-SP).
 
 > 🔗 **Link do projeto no Wokwi:** <https://wokwi.com/projects/481031051848539137>
-> 🎬 **Vídeo (até 4 min):** `COLE_AQUI_O_LINK_DO_VIDEO`
+> 🎬 **Vídeo (3:51):** <https://youtu.be/fNnREyfm7bA>
 
 | Repositório da mesma CitizenTech | Papel |
 |---|---|
@@ -175,6 +175,12 @@ Durante a simulação, **clique no DHT22** e ajuste os controles de temperatura 
 | Evidência | Arquivo |
 |---|---|
 | Simulação rodando: Wi-Fi conectado, as duas zonas lidas (25 °C × 30 °C, Δ = +5 °C → ATENÇÃO), Open-Meteo e envio `HTTP 200` | [`evidencias/01_wokwi_simulacao_funcionando.jpg`](evidencias/01_wokwi_simulacao_funcionando.jpg) |
+| Calçadão a 41,6 °C: risco PERIGO, LED vermelho piscando e buzzer | [`evidencias/02_wokwi_calcadao_41c_perigo.png`](evidencias/02_wokwi_calcadao_41c_perigo.png) |
+| ESP32 enviando as duas zonas para a API real na VM da Oracle (`HTTP 201`, JSON completo) | [`evidencias/03_wokwi_http201_api_na_vm.png`](evidencias/03_wokwi_http201_api_na_vm.png) |
+| Envio imediato quando o risco muda: `[API] Risco mudou: ATENCAO -> PERIGO. Envio imediato.` (teste de 19/11/2026) | [`evidencias/04_serial_envio_imediato_mudanca_risco.png`](evidencias/04_serial_envio_imediato_mudanca_risco.png) |
+| Painel do SombraViva exibindo as leituras recebidas do ESP32 | [`evidencias/05_painel_recebendo_leituras_esp32.png`](evidencias/05_painel_recebendo_leituras_esp32.png) |
+
+> Nos prints o `DEVICE_TOKEN` do sketch foi coberto.
 
 Saída real do Serial Monitor (simulação de 18/11/2026):
 
@@ -199,5 +205,6 @@ Saída real do Serial Monitor (simulação de 18/11/2026):
 | `api_medicoes_exemplo.py` | Endpoint FastAPI + Pydantic + validação do token, para integrar ao backend de SOA |
 | `roteiro_video.md` | Roteiro cronometrado do vídeo (até 4 min) |
 | `integrantes.txt` | Nomes e RMs da equipe (entregável) |
+| `prompts.md` | Registro do uso de IA (regra da GS) |
 
 > ⚠️ Usamos apenas **dados simulados** e tokens fictícios. Nenhum dado pessoal real é coletado.
