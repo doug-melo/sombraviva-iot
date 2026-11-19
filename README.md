@@ -44,7 +44,7 @@ A cada 5 segundos o ESP32:
 4. Classifica o **nível de risco** (normal / atenção / alerta / perigo).
 5. Sinaliza localmente: **semáforo de LEDs**, **buzzer** (perigo) e **display OLED**.
 
-A cada 30 segundos ele envia as medições (JSON) para a **API REST do SombraViva (FastAPI + MySQL)**, com **token Bearer do dispositivo**. A cada 10 minutos consulta a **temperatura oficial de Osasco na Open-Meteo** para comparar sensor x dado meteorológico.
+Ele envia as medições (JSON) para a **API REST do SombraViva (FastAPI + MySQL)**, com **token Bearer do dispositivo**, **a cada 30 segundos** e também **na hora em que o nível de risco muda** (ex.: atenção → perigo), sem esperar o próximo ciclo. No Serial aparece `[API] Risco mudou: ATENCAO -> PERIGO. Envio imediato.` A cada 10 minutos consulta a **temperatura oficial de Osasco na Open-Meteo** para comparar sensor x dado meteorológico.
 
 ## 2. Como o circuito se integra ao SombraViva (não é um projeto paralelo)
 
