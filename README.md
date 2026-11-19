@@ -9,8 +9,21 @@ Projeto CitizenTech **SombraViva — Inteligência Climática Urbana** (estudo d
 | Repositório da mesma CitizenTech | Papel |
 |---|---|
 | **sombraviva-iot** (este) | Circuito ESP32 no Wokwi (Physical Computing) |
-| [Global-Solution---2-semestre---Cyber-Soa](https://github.com/JoaoKraideM/Global-Solution---2-semestre---Cyber-Soa) | API REST que recebe as medições em `POST /api/v1/medicoes` |
-| [sombraviva-so](https://github.com/doug-melo/sombraviva-so) | VM Linux que hospeda a API e publica o túnel HTTPS usado pelo Wokwi |
+| [Global-Solution---4-semestre---Cyber-Soa](https://github.com/JoaoKraideM/Global-Solution---4-semestre---Cyber-Soa) | API REST que recebe as medições em `POST /api/v1/medicoes` |
+| [sombraviva-so](https://github.com/doug-melo/sombraviva-so) | VM Linux na Oracle Cloud que hospeda a API (o Wokwi envia direto para o IP público) |
+
+## Ficha da CitizenTech
+
+| | |
+|---|---|
+| **Nome** | SombraViva — Inteligência Climática Urbana |
+| **Cidade e bairro** | Osasco (SP), Centro — Calçadão da Rua Antônio Agú |
+| **Cidadão beneficiado** | Pedestres, trabalhadores de rua, comerciantes e idosos que passam pelo Calçadão; e a prefeitura, que decide onde plantar e sombrear |
+| **Problema, em uma frase** | Depois da retirada das árvores do Calçadão, quem passa por ali fica exposto a uma ilha de calor sem saber quando o calor vira risco, e a cidade não tem dados locais para decidir onde devolver a sombra. |
+| **Como funciona** | Um ESP32 mede a temperatura na sombra e no piso exposto, calcula o índice de calor e o risco, e envia as leituras para uma API na nuvem; o painel web mostra a diferença em tempo real e o histórico. |
+| **O que cada parte faz** | **Operating Systems:** VM Linux na Oracle Cloud provisionada por Shell Script, que hospeda a API com monitoramento, auditoria e recuperação de falhas ([sombraviva-so](https://github.com/doug-melo/sombraviva-so)). **Physical Computing:** circuito ESP32 no Wokwi que mede sombra × sol, sinaliza o risco com LEDs, display e buzzer e envia à API ([sombraviva-iot](https://github.com/doug-melo/sombraviva-iot)). **SOA e Cybersecurity:** API FastAPI + MySQL com Swagger, autenticação dos dispositivos e proteção de dados ([API](https://github.com/JoaoKraideM/Global-Solution---4-semestre---Cyber-Soa)). |
+| **Indicador de impacto** | Diferença de temperatura (°C) entre a sombra e o piso exposto e número de horas por dia em ATENÇÃO, ALERTA ou PERIGO no Calçadão. Para ampliar: quantidade de pontos monitorados na cidade. |
+| **ODS conectados** | **ODS 3 — Saúde e bem-estar:** avisa quando o índice de calor passa de 27, 32 e 41 °C, faixas em que o NOAA indica fadiga, exaustão e insolação, protegendo quem trabalha e circula ao sol. **ODS 11 — Cidades sustentáveis:** dá à prefeitura dados locais, por ponto da cidade, para priorizar arborização e sombreamento. **ODS 13 — Ação climática:** registra ao longo do tempo a intensidade da ilha de calor, evidência para a adaptação às ondas de calor. |
 
 ## Integrantes
 
@@ -64,7 +77,7 @@ Ele envia as medições (JSON) para a **API REST do SombraViva (FastAPI + MySQL)
 |---|---|
 | **SOA** | Envia as medições para `POST /api/v1/medicoes` da API da equipe, que grava no MySQL (tabela `readings`, migração Alembic 004) e devolve `201`. |
 | **Cybersecurity** | Dispositivo autenticado por **token Bearer** + `X-Device-Id`; tokens inválidos geram `401` e um evento `iot_auth` no painel `/admin` (sem gravar o token); a API impede que um dispositivo publique em nome de outro (`403`). |
-| **Frontend / Operating Systems** | Cada zona alimenta uma estação do portal (`arborizada` → `verde-demo`, `sem_vegetacao` → `centro-demo`); a API roda na VM Linux provisionada por Shell Script e é exposta ao Wokwi por um túnel HTTPS. |
+| **Frontend / Operating Systems** | Cada zona alimenta uma estação do portal (`arborizada` → `verde-demo`, `sem_vegetacao` → `centro-demo`); a API roda na VM Linux da Oracle Cloud, provisionada por Shell Script, e o Wokwi a acessa pelo IP público da VM. |
 | **ODS 3, 11 e 13** | Alertas de calor protegem a saúde (ODS 3), os dados apoiam o planejamento urbano e a arborização (ODS 11) e evidenciam a adaptação climática (ODS 13). |
 
 ## 3. Componentes e pinagem
